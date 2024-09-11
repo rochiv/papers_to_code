@@ -3,7 +3,7 @@ import torch.nn as nn
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
+# TODO: compare the generated code to the original paper
 class UNetBlock(nn.Module):
     """
     UNetBlock: Basic building block for the U-Net architecture used in the Generator
