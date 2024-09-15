@@ -1,9 +1,6 @@
 import torch
 import torch.nn as nn
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# TODO: compare the generated code to the original paper
 class UNetBlock(nn.Module):
     """
     UNetBlock: Basic building block for the U-Net architecture used in the Generator
@@ -88,7 +85,17 @@ class Generator(nn.Module):
         u7 = self.up7(torch.cat([u6, d2], 1))
         return self.final(torch.cat([u7, d1], 1))
 
-        # 6 channels: 3 for input image, 3 for target/generated image
+
+class Discriminator(nn.Module):
+    """
+    Discriminator: PatchGAN architecture for image-to-image translation
+    This discriminator classifies patches of the image as real or fake,
+    which helps in preserving high-frequency details
+    """
+
+    def __init__(
+        self, in_channels=6
+    ):  # 6 channels: 3 for input image, 3 for target/generated image
         super(Discriminator, self).__init__()
         self.model = nn.Sequential(
             nn.Conv2d(in_channels, 64, 4, stride=2, padding=1),
@@ -111,15 +118,25 @@ class Generator(nn.Module):
 
 
 if __name__ == "__main__":
-    # Test the Generator
-    generator = Generator()
-    gen_input = torch.randn(1, 3, 256, 256)
+    # Set the device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+
+    # Test the Generator with a larger input size
+    generator = Generator().to(device)
+    gen_input = torch.randn(1, 3, 512, 512).to(
+        device
+    )  # Changed from 256x256 to 512x512
     gen_output = generator(gen_input)
     print(f"Generator output shape: {gen_output.shape}")
 
-    # Test the Discriminator
-    discriminator = Discriminator()
-    disc_input_x = torch.randn(1, 3, 256, 256)  # Input image
-    disc_input_y = torch.randn(1, 3, 256, 256)  # Target or generated image
+    # Test the Discriminator with larger input sizes
+    discriminator = Discriminator().to(device)
+    disc_input_x = torch.randn(1, 3, 512, 512).to(
+        device
+    )  # Changed from 256x256 to 512x512
+    disc_input_y = torch.randn(1, 3, 512, 512).to(
+        device
+    )  # Changed from 256x256 to 512x512
     disc_output = discriminator(disc_input_x, disc_input_y)
     print(f"Discriminator output shape: {disc_output.shape}")
