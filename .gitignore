@@ -1,3 +1,6 @@
+# data directories
+pix2pix/cityscapes/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
